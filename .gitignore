@@ -1,9 +1,13 @@
+### Go.gitignore ###
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+etc/unit_test.env
+cloud-station.exe
+cloud-station
 
 # Test binary, built with `go test -c`
 *.test
@@ -13,3 +17,21 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+### Go.patch ###
+/vendor/
+/Godeps/
+
+### VisualStudioCode.gitignore ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+### VisualStudioCode.patch ###
+# Ignore all local history of files
+.history
+
+### END .gitignore -----------------------------------------
