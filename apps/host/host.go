@@ -28,6 +28,13 @@ type Host struct {
 	*Describe
 }
 
+func NewHost() *Host {
+	return &Host{
+		Resource: &Resource{},
+		Describe: &Describe{},
+	}
+}
+
 type Vendor int
 
 const (
