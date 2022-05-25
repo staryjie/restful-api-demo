@@ -31,7 +31,7 @@ type Host struct {
 type Vendor int
 
 const (
-	// IDC
+	// IDC, 枚举的默认值
 	PRIVATE_IDC Vendor = iota
 	// 阿里云
 	ALIYUN
