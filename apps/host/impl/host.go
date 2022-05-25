@@ -11,7 +11,8 @@ import (
 func (i *HostServiceImpl) CreateHost(ctx context.Context, ins *host.Host) (
 	*host.Host, error) {
 	// 直接打印日志
-	i.l.Debug("Create Host")
+	i.l.Named("Create").Debug("Create Host") // 日志分层
+	i.l.Info("Create Host")
 
 	// 带格式化的日志打印
 	i.l.Debugf("Create Host %s", ins.Name)
