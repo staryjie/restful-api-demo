@@ -7,6 +7,8 @@ github.com/caarlos0/env/v6 v6.9.2/go.mod h1:hvp/ryKXKipEkcuYjs9mI4bBCg+UI0Yhgm5Z
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
+github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/infraboard/mcube v1.8.6 h1:o+zFeDV2Azd5y8LQAZCVl7HOoBwkehqjzsOy7ptSA8c=
 github.com/infraboard/mcube v1.8.6/go.mod h1:Cym2MnzvUh7oMegBvIe1zKTSX4tLwRuINAWExxudq0o=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
