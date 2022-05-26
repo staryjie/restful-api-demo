@@ -1,0 +1,8 @@
+{
+    "id": "ins-02",
+    "region": "cn-hangzhou",
+    "type": "sm1",
+    "name": "postman-test",
+    "cpu": 1,
+    "memory": 2048
+}

@@ -1,0 +1,27 @@
+{
+    "code": 0,
+    "data": {
+        "id": "ins-02",
+        "vendor": 0,
+        "region": "cn-hangzhou",
+        "create_at": 1653558778323,
+        "expire_at": 0,
+        "type": "sm1",
+        "name": "postman-test",
+        "description": "",
+        "status": "",
+        "tags": null,
+        "update_at": 0,
+        "sync_at": 0,
+        "accout": "",
+        "public_ip": "",
+        "private_ip": "",
+        "cpu": 1,
+        "memory": 2048,
+        "gpu_amount": 0,
+        "gpu_spec": "",
+        "os_type": "",
+        "os_name": "",
+        "serial_number": ""
+    }
+}

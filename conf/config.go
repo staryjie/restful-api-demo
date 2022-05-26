@@ -60,6 +60,10 @@ func NewDefaultApp() *App {
 	}
 }
 
+func (a *App) HttpAddr() string {
+	return fmt.Sprintf("%s:%s", a.Host, a.Port)
+}
+
 // MySQL todo
 type MySQL struct {
 	Host     string `toml:"host" env:"MYSQL_HOST"`

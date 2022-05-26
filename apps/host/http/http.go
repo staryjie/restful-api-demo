@@ -12,7 +12,7 @@ type Handler struct {
 	svc host.Service
 }
 
-func NewHTTPHandler(svc host.Service) *Handler {
+func NewHostHTTPHandler(svc host.Service) *Handler {
 	return &Handler{
 		svc: svc,
 	}
@@ -20,5 +20,5 @@ func NewHTTPHandler(svc host.Service) *Handler {
 
 // 完成HTTP Handler的注册
 func (h *Handler) Registry(r gin.IRouter) {
-	r.POST("/host", h.createHost)
+	r.POST("/hosts", h.createHost)
 }
