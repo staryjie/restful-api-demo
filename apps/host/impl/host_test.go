@@ -20,11 +20,16 @@ var (
 func TestCreate(t *testing.T) {
 	ins := host.NewHost()
 	ins.Resource.Name = "test"
+	ins.Resource.Id = "ins-01"
+	ins.Resource.Region = "cn-hangzhou"
+	ins.Resource.Type = "sm1"
+	ins.Describe.CPU = 1
+	ins.Describe.Memory = 2048
 
 	should := assert.New(t)
 	ins, err := service.CreateHost(context.Background(), ins)
 	if should.NoError(err) {
-		fmt.Println(ins)
+		fmt.Printf("%#v", ins)
 	}
 }
 
