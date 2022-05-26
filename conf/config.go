@@ -1,17 +1,50 @@
 package conf
 
+// 全局Config实例对象
+// 也就是城西在内存中的配置对象
+// 程序内部获取配置都通过读取该对象
+// Condig对象什么时候被初始化
+//    配置加载时：
+//        1. LoadConfigFromToml
+//        2. LoadConfigFromEnv
+// 为了不被程序在运行时进行修改，设置为私有变量
+var config *Config
+
+// 获取到配置，单独提供函数
+// 全局Config对象获取函数
+func C() *Config {
+	return config
+}
+
 // Config 应用配置
 type Config struct {
-	App   *app   `toml:"app"`
+	App   *App   `toml:"app"`
 	Log   *Log   `toml:"log"`
 	MySQL *MySQL `toml:"mysql"`
 }
 
-type app struct {
+// 初始化一个有默认值的Config对象
+func NewDefaultConfig() *Config {
+	return &Config{
+		App:   NewDefaultApp(),
+		Log:   NewDefaultLog(),
+		MySQL: NewDefaultMySQL(),
+	}
+}
+
+type App struct {
 	Name string `toml:"name" env:"APP_NAME"`
 	Host string `toml:"host" env:"APP_HOST"`
 	Port string `toml:"port" env:"APP_PORT"`
-	Key  string `toml:"key" env:"APP_KEY"`
+	// Key  string `toml:"key" env:"APP_KEY"`
+}
+
+func NewDefaultApp() *App {
+	return &App{
+		Name: "demo",
+		Host: "127.0.0.1",
+		Port: "8050",
+	}
 }
 
 // MySQL todo
@@ -33,10 +66,29 @@ type MySQL struct {
 	MaxIdleTime int `toml:"max_idle_time" env:"MYSQL_MAX_idle_TIME"`
 }
 
+func NewDefaultMySQL() *MySQL {
+	return &MySQL{
+		Host:        "127.0.0.1",
+		Port:        "3306",
+		UserName:    "demo",
+		Password:    "123456",
+		MaxOpenConn: 200,
+		MaxIdleConn: 100,
+	}
+}
+
 // Log todo
 type Log struct {
 	Level   string    `toml:"level" env:"LOG_LEVEL"`
 	PathDir string    `toml:"path_dir" env:"LOG_PATH_DIR"`
 	Format  LogFormat `toml:"format" env:"LOG_FORMAT"`
 	To      LogTo     `toml:"to" env:"LOG_TO"`
+}
+
+func NewDefaultLog() *Log {
+	return &Log{
+		Level:  "info",
+		Format: TextFormat,
+		To:     ToStdout,
+	}
 }
