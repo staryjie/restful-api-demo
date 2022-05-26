@@ -43,6 +43,8 @@ var StartCmd = &cobra.Command{
 	},
 }
 
+// 还没有初始化Logger实例
+
 func init() {
 	StartCmd.PersistentFlags().StringVarP(&confFile, "config", "f", "etc/demo.toml", "demo api配置文件路径")
 	RootCmd.AddCommand(StartCmd)
