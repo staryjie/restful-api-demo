@@ -1,6 +1,15 @@
 package host
 
-import "context"
+import (
+	"context"
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
+
+var (
+	validate = validator.New()
+)
 
 // Host app service 的接口实现
 type Service interface {
@@ -32,6 +41,18 @@ func NewHost() *Host {
 	return &Host{
 		Resource: &Resource{},
 		Describe: &Describe{},
+	}
+}
+
+func (h *Host) Validate() error {
+
+	return validate.Struct(h)
+}
+
+// 填充默认值
+func (h *Host) InjectDefault() {
+	if h.CreateAt == 0 {
+		h.CreateAt = time.Now().UnixMilli()
 	}
 }
 

@@ -19,6 +19,16 @@ func (i *HostServiceImpl) CreateHost(ctx context.Context, ins *host.Host) (
 
 	// 携带额外的meta数据，常用于Trace系统
 	i.l.With(logger.NewAny("request-id", "req01")).Debug("Create Host with meta kv")
+
+	// 校验数据合法性
+	if err := ins.Validate(); err != nil {
+		return nil, err
+	}
+
+	// 由dao层负责将对象存储到数据库
+	if err := i.save(ctx, ins); err != nil {
+		return nil, err
+	}
 	return ins, nil
 }
 
