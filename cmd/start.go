@@ -3,10 +3,14 @@ package cmd
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
+
 	"github.com/staryjie/restful-api-demo/apps"
-	"github.com/staryjie/restful-api-demo/apps/host/http"
-	"github.com/staryjie/restful-api-demo/apps/host/impl"
 	"github.com/staryjie/restful-api-demo/conf"
+
+	"github.com/staryjie/restful-api-demo/apps/host/http"
+
+	// 注册所有的服务实例
+	_ "github.com/staryjie/restful-api-demo/apps/all"
 )
 
 var (
@@ -34,7 +38,11 @@ var StartCmd = &cobra.Command{
 		// service := impl.NewHostServiceImpl()
 
 		// 注册HostService的实例到IOC中
-		apps.HostService = impl.NewHostServiceImpl()
+		// apps.HostService = impl.NewHostServiceImpl()
+		// 采用：_ "github.com/staryjie/restful-api-demo/apps/host/impl" 完成注册
+
+		// apps.HostService 是一个host.Service的接口，并没有实例初始化(Config)的方法
+		apps.Init()
 
 		// 通过Host API Handler对外提供HTTP RESTful API接口
 		// api := http.NewHostHTTPHandler(service)
