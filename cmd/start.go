@@ -7,8 +7,6 @@ import (
 	"github.com/staryjie/restful-api-demo/apps"
 	"github.com/staryjie/restful-api-demo/conf"
 
-	"github.com/staryjie/restful-api-demo/apps/host/http"
-
 	// 注册所有的服务实例
 	_ "github.com/staryjie/restful-api-demo/apps/all"
 )
@@ -42,17 +40,20 @@ var StartCmd = &cobra.Command{
 		// 采用：_ "github.com/staryjie/restful-api-demo/apps/host/impl" 完成注册
 
 		// apps.HostService 是一个host.Service的接口，并没有实例初始化(Config)的方法
-		apps.Init()
+		apps.InitImpl()
 
 		// 通过Host API Handler对外提供HTTP RESTful API接口
 		// api := http.NewHostHTTPHandler(service)
-		api := http.NewHostHTTPHandler()
+		// api := http.NewHostHTTPHandler()
 		// 从IOC中获取依赖，解除了相互依赖关系
-		api.Config()
+		// api.Config()
 
 		// 提供一个Gin的Router
 		g := gin.Default()
-		api.Registry(g)
+
+		// 注册所有HTTP Handler到IOC中
+		apps.InitGin(g)
+		// api.Registry(g)
 
 		return g.Run(conf.C().App.HttpAddr())
 	},

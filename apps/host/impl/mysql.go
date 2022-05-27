@@ -57,6 +57,6 @@ func (i *HostServiceImpl) Name() string {
 // _ import app 实现自动注册到IOC
 func init() {
 	// 对象注册到IOC层
-	apps.Registry(impl)
+	apps.RegistryImpl(impl)
 	// apps.HostService = impl
 }
