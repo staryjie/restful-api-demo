@@ -13,6 +13,12 @@ port = "3306"
 username = "demo"
 
 [log]
+# DebugLevel: "debug",
+# InfoLevel:  "info",
+# WarnLevel:  "warning",
+# ErrorLevel: "error",
+# FatalLevel: "fatal",
+# PanicLevel: "panic",
 dir = "logs"
 format = "text"
 level = "debug"
