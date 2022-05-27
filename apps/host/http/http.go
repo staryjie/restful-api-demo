@@ -12,6 +12,8 @@ type Handler struct {
 	svc host.Service
 }
 
+// 面向接口，真正Service的实现，在服务实例化的时候传递进行
+// 也就是在程序通过CLI start的时候
 func NewHostHTTPHandler(svc host.Service) *Handler {
 	return &Handler{
 		svc: svc,
