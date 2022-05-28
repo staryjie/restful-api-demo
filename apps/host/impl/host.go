@@ -100,9 +100,34 @@ func (i *HostServiceImpl) QueryHost(ctx context.Context, req *host.QueryHostRequ
 }
 
 // 查询主机详情
-func (i *HostServiceImpl) DescribeHost(ctx context.Context, req *host.QueryHostRequest) (
+func (i *HostServiceImpl) DescribeHost(ctx context.Context, req *host.DescribeHostRequest) (
 	*host.Host, error) {
-	return nil, nil
+	b := sqlbuilder.NewBuilder(QueryHostSQL)
+	b.Where("r.id = ?", req.Id)
+
+	describSQL, args := b.Build()
+	i.l.Debugf("Describe sql: %s, args: %v", describSQL, args)
+
+	// describe stmt，构建一个Prepare语句
+	stmt, err := i.db.PrepareContext(ctx, describSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	ins := host.NewHost()
+
+	err = stmt.QueryRowContext(ctx, args...).Scan(
+		&ins.Id, &ins.Vendor, &ins.Region, &ins.CreateAt, &ins.ExpireAt,
+		&ins.Type, &ins.Name, &ins.Description, &ins.Status, &ins.UpdateAt, &ins.SyncAt,
+		&ins.Account, &ins.PublicIP, &ins.PrivateIP,
+		&ins.CPU, &ins.Memory, &ins.GPUSpec, &ins.GPUAmount, &ins.OSType, &ins.OSName, &ins.SerialNumber,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return ins, nil
 }
 
 // 更新主机信息
