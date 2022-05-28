@@ -2,13 +2,17 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/gin-gonic/gin"
+	"github.com/infraboard/mcube/logger"
 	"github.com/infraboard/mcube/logger/zap"
 	"github.com/spf13/cobra"
 
 	"github.com/staryjie/restful-api-demo/apps"
 	"github.com/staryjie/restful-api-demo/conf"
+	"github.com/staryjie/restful-api-demo/protocol"
 
 	// 注册所有的服务实例
 	_ "github.com/staryjie/restful-api-demo/apps/all"
@@ -57,14 +61,71 @@ var StartCmd = &cobra.Command{
 		// api.Config()
 
 		// 提供一个Gin的Router
-		g := gin.Default()
+		// g := gin.Default()
 
 		// 注册所有HTTP Handler到IOC中
-		apps.InitGin(g)
+		// apps.InitGin(g)
 		// api.Registry(g)
 
-		return g.Run(conf.C().App.HttpAddr())
+		svc := NewManager()
+		ch := make(chan os.Signal, 1)
+		// channel是一种复合数据结构, 可以当初一个容器, 自定义的struct make(chan int, 1000), 8bytes * 1024  1Kb
+		// 如果没close gc是不会回收的
+		defer close(ch)
+
+		// Go为了并发编程设计的(CSP), 依赖Channel作为数据通信的信道
+		// 出现了一个思路模式的转变:
+		//    单兵作战(只有一个Groutine) --> 团队作战(多个Groutine 采用Channel来通信)
+		//    main { for range channel }  这个时候的channel仅仅想到于一个缓存, 必须选择带缓存区的channl
+		//    signal.Notify 当中一个Goroutine, g1
+		//    go svc.WaitStop(ch) 第二Goroutine, g2
+		//    g1 -- ch1 --> g2
+		//    g1 <-- ch2 -- g2
+		//    g1 数据发送给ch1, g2 读取channle中的数据, chanel 只要生成好了就能用, 如果channle关闭
+		//    设计channel 使用数据的发送方负责关闭, 相当于表示挂电话
+		//    for range   由range帮忙处理了 chnanel 关闭后， read的中断处理
+		//    for v,err := <-ch { if(err == io.EOF) break }
+		signal.Notify(ch, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT)
+		go svc.WaitStop(ch)
+
+		return svc.Start()
+
+		// return g.Run(conf.C().App.HttpAddr())
 	},
+}
+
+// 用于管理所有需要启动的服务
+// 1.HTTP服务的启动
+// 2.
+type manager struct {
+	http *protocol.HttpService
+	l    logger.Logger
+}
+
+func NewManager() *manager {
+	return &manager{
+		http: protocol.NewHttpService(),
+		l:    zap.L().Named("CLI"),
+	}
+}
+
+func (m *manager) Start() error {
+	return m.http.Start()
+}
+
+// 处理来自外部的中断信号, 比如Terminaled
+func (m *manager) WaitStop(ch <-chan os.Signal) {
+	for v := range ch {
+		switch v {
+		// case syscall.SIGTERM:
+		// case syscall.SIGHUP:
+
+		// 统一做停止服务处理
+		default:
+			m.l.Infof("Received signal: %s, start stop server ...", v)
+			m.http.Stop()
+		}
+	}
 }
 
 // 问题：
