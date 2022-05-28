@@ -32,6 +32,7 @@ func (h *Handler) Config() {
 // 完成HTTP Handler的注册
 func (h *Handler) Registry(r gin.IRouter) {
 	r.POST("/hosts", h.createHost)
+	r.GET("/hosts", h.queryHost)
 }
 
 func (h *Handler) Name() string {

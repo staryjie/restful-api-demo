@@ -1,6 +1,8 @@
 package host
 
 import (
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -11,8 +13,8 @@ var (
 )
 
 type HostSet struct {
-	Items []*Host `json:"items"`
 	Total int     `json:"total"`
+	Items []*Host `json:"items"`
 }
 
 type Host struct {
@@ -27,6 +29,16 @@ func NewHost() *Host {
 		Resource: &Resource{},
 		Describe: &Describe{},
 	}
+}
+
+func NewHostSet() *HostSet {
+	return &HostSet{
+		Items: []*Host{},
+	}
+}
+
+func (s *HostSet) Add(item *Host) {
+	s.Items = append(s.Items, item)
 }
 
 func (h *Host) Validate() error {
@@ -84,6 +96,44 @@ type Describe struct {
 
 // 查询主机请求
 type QueryHostRequest struct {
+	PageSize   int    `json:"page_size"`
+	PageNumber int    `json:"page_number"`
+	KeyWords   string `json:"kws"`
+}
+
+func NewQueryHostRequest() *QueryHostRequest {
+	return &QueryHostRequest{
+		PageSize:   20,
+		PageNumber: 1,
+	}
+}
+
+func NewQueryHostFromHTTP(r *http.Request) *QueryHostRequest {
+	req := NewQueryHostRequest()
+	// query string
+	qs := r.URL.Query()
+
+	pss := qs.Get("page_size")
+	if pss != "" {
+		req.PageSize, _ = strconv.Atoi(pss)
+	}
+
+	pns := qs.Get("page_number")
+	if pns != "" {
+		req.PageNumber, _ = strconv.Atoi(pns)
+	}
+
+	req.KeyWords = qs.Get("kws")
+
+	return req
+}
+
+func (req *QueryHostRequest) OffSet() int64 {
+	return int64((req.PageNumber - 1) * req.PageSize)
+}
+
+func (req *QueryHostRequest) GetPageSize() uint {
+	return uint(req.PageSize)
 }
 
 // 更新主机信息请求

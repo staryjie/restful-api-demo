@@ -33,6 +33,21 @@ func TestCreate(t *testing.T) {
 	}
 }
 
+func TestQueryHost(t *testing.T) {
+	should := assert.New(t)
+
+	req := host.NewQueryHostRequest()
+	req.KeyWords = "postman"
+	set, err := service.QueryHost(context.Background(), req)
+	if should.NoError(err) {
+		fmt.Printf("Total: %d\n", set.Total)
+
+		for i := range set.Items {
+			fmt.Println(set.Items[i].Id)
+		}
+	}
+}
+
 func init() {
 	err := conf.LoadConfigFromToml("../../../etc/demo.toml")
 	// err := conf.LoadConfigFromEnv()
