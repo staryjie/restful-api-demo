@@ -43,5 +43,8 @@ run: # Run Develop server
 clean: ## Remove previous build
 	@rm -f dist/*
 
+push: ## push code to github
+	@git push -u origin main
+
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
