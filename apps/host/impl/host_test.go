@@ -59,6 +59,22 @@ func TestDescribeHost(t *testing.T) {
 	}
 }
 
+func TestUpdateHost(t *testing.T) {
+	should := assert.New(t)
+
+	req := host.NewPatchUpdateRequest("ins-09")
+	req.Name = "test-patch-09"
+	req.Region = "cn-shanghai"
+	req.Type = "sm2"
+	req.CPU = 4
+	req.Memory = 4096
+	req.Description = "测试用例"
+	ins, err := service.UpdateHost(context.Background(), req)
+	if should.NoError(err) {
+		fmt.Println(ins.Name)
+	}
+}
+
 func init() {
 	err := conf.LoadConfigFromToml("../../../etc/demo.toml")
 	// err := conf.LoadConfigFromEnv()

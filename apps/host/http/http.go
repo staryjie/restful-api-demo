@@ -34,6 +34,8 @@ func (h *Handler) Registry(r gin.IRouter) {
 	r.POST("/hosts", h.createHost)
 	r.GET("/hosts", h.queryHost)
 	r.GET("/hosts/:id", h.describeHost)
+	r.PUT("/hosts/:id", h.putHost)
+	r.PATCH("/hosts/:id", h.patchHost)
 }
 
 func (h *Handler) Name() string {

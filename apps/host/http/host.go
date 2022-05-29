@@ -51,3 +51,47 @@ func (h *Handler) describeHost(c *gin.Context) {
 
 	response.Success(c.Writer, ins)
 }
+
+func (h *Handler) putHost(c *gin.Context) {
+	// 从HTTP请求的query string中获取参数
+	req := host.NewPutUpdateRequest(c.Param("id"))
+
+	// 解析Body
+	if err := c.Bind(req.Host); err != nil {
+		response.Failed(c.Writer, err)
+		return
+	}
+
+	req.Id = c.Param("id")
+
+	// 接口调用，有正常返回和失败返回
+	ins, err := h.svc.UpdateHost(c.Request.Context(), req)
+	if err != nil {
+		response.Failed(c.Writer, err)
+		return
+	}
+
+	response.Success(c.Writer, ins)
+}
+
+func (h *Handler) patchHost(c *gin.Context) {
+	// 从HTTP请求的query string中获取参数
+	req := host.NewPatchUpdateRequest(c.Param("id"))
+
+	// 解析Body
+	if err := c.Bind(req.Host); err != nil {
+		response.Failed(c.Writer, err)
+		return
+	}
+
+	req.Id = c.Param("id")
+
+	// 接口调用，有正常返回和失败返回
+	ins, err := h.svc.UpdateHost(c.Request.Context(), req)
+	if err != nil {
+		response.Failed(c.Writer, err)
+		return
+	}
+
+	response.Success(c.Writer, ins)
+}

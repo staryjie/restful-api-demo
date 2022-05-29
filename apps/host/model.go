@@ -1,6 +1,7 @@
 package host
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -51,6 +52,30 @@ func (h *Host) InjectDefault() {
 	if h.CreateAt == 0 {
 		h.CreateAt = time.Now().UnixMilli()
 	}
+}
+
+// Host对象全量更新
+func (h *Host) Put(obj *Host) error {
+	if obj.Id != h.Id { // 全局ID不允许更新
+		return fmt.Errorf("Id not allowed to update, Permission Denied!")
+	}
+	*h.Resource = *obj.Resource
+	*h.Describe = *obj.Describe
+
+	return nil
+}
+
+// Host对象局部更新
+func (h *Host) Patch(obj *Host) error {
+	if obj.Name != "" {
+		h.Name = obj.Name
+	}
+
+	if obj.CPU != 0 {
+		h.CPU = obj.CPU
+	}
+
+	return nil
 }
 
 type Vendor int
@@ -146,9 +171,37 @@ func NewDescribeHostRequestWithId(id string) *DescribeHostRequest {
 	}
 }
 
+type UPDATE_MODE string
+
+const (
+	// 全量更新
+	UPDATE_MODE_PUT UPDATE_MODE = "put"
+	// 局部更新
+	UPDATE_MODE_PATCH UPDATE_MODE = "patch"
+)
+
 // 更新主机信息请求
 type UpdateHostRequest struct {
-	*Describe
+	UpdateMode UPDATE_MODE `json:"update_mode"`
+	*Host
+}
+
+func NewPutUpdateRequest(id string) *UpdateHostRequest {
+	h := NewHost()
+	h.Id = id
+	return &UpdateHostRequest{
+		UpdateMode: UPDATE_MODE_PUT,
+		Host:       h,
+	}
+}
+
+func NewPatchUpdateRequest(id string) *UpdateHostRequest {
+	h := NewHost()
+	h.Id = id
+	return &UpdateHostRequest{
+		UpdateMode: UPDATE_MODE_PUT,
+		Host:       h,
+	}
 }
 
 // 删除主机请求

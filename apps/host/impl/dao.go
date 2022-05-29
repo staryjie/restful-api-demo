@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/staryjie/restful-api-demo/apps/host"
@@ -62,6 +63,60 @@ func (i *HostServiceImpl) save(ctx context.Context, ins *host.Host) error {
 
 	_, err = dstmt.ExecContext(ctx, ins.Id, ins.CPU, ins.Memory, ins.GPUAmount, ins.GPUSpec,
 		ins.OSType, ins.OSName, ins.SerialNumber)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *HostServiceImpl) update(ctx context.Context, ins *host.Host) error {
+	var (
+		err       error
+		resStmt   *sql.Stmt
+		hostStemt *sql.Stmt
+	)
+	// 开始事务
+	tx, err := i.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	// Defer处理事务的提交方式
+	//   1.无错误，则Commit事务
+	//   2.有错误，则Rollback事务
+	defer func() {
+		if err != nil {
+			if err := tx.Rollback(); err != nil {
+				i.l.Errorf("Rollback error, %s", err)
+			}
+		} else {
+			if err := tx.Commit(); err != nil {
+				i.l.Errorf("Commit error, %s", err)
+			}
+		}
+	}()
+
+	// 更新 Resource 表
+	resStmt, err = tx.PrepareContext(ctx, updateResourceSQL)
+	if err != nil {
+		return err
+	}
+
+	// 执行SQL
+	_, err = resStmt.ExecContext(ctx, ins.Vendor, ins.Region, ins.ExpireAt, ins.Name, ins.Description, ins.Id)
+	if err != nil {
+		return err
+	}
+
+	// 更新Host表
+	hostStemt, err = tx.PrepareContext(ctx, updateHostSQL)
+	if err != nil {
+		return err
+	}
+
+	// 执行SQL
+	_, err = hostStemt.ExecContext(ctx, ins.CPU, ins.Memory, ins.Id)
 	if err != nil {
 		return err
 	}
