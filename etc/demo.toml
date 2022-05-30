@@ -6,7 +6,7 @@ port = "8050"
 
 # GRANT ALL PRIVILEGES ON test.* TO 'demo'@'%' IDENTIFIED BY '123456';
 [mysql]
-database = "test"
+database = "demo"
 host = "127.0.0.1"
 password = "123456"
 port = "3306"
