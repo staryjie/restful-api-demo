@@ -208,3 +208,10 @@ func NewPatchUpdateRequest(id string) *UpdateHostRequest {
 type DeleteHostRequest struct {
 	Id string
 }
+
+func NewDeleteHostRequestWithId(id string) *DeleteHostRequest {
+	return &DeleteHostRequest{
+		Id: id,
+	}
+}
+

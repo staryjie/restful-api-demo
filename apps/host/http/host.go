@@ -95,3 +95,17 @@ func (h *Handler) patchHost(c *gin.Context) {
 
 	response.Success(c.Writer, ins)
 }
+
+func (h *Handler) deleteHost(c *gin.Context) {
+	// 从HTTP请求的query string中获取参数
+	req := host.NewDeleteHostRequestWithId(c.Param("id"))
+
+	// 调用接口，删除数据
+	ins, err := h.svc.DeleteHost(c.Request.Context(), req)
+	if err != nil {
+		response.Failed(c.Writer, err)
+		return
+	}
+
+	response.Success(c.Writer, ins)
+}

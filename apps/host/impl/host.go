@@ -172,5 +172,21 @@ func (i *HostServiceImpl) UpdateHost(ctx context.Context, req *host.UpdateHostRe
 // 删除主机,前端需要展示被删除的主机信息，所以需要返回当前删除的主机信息
 func (i *HostServiceImpl) DeleteHost(ctx context.Context, req *host.DeleteHostRequest) (
 	*host.Host, error) {
-	return nil, nil
+	var (
+		err error
+	)
+
+	// 获取数据对象
+	ins, err := i.DescribeHost(ctx, host.NewDescribeHostRequestWithId(req.Id))
+	if err != nil {
+		i.l.Debugf("Get host error %s", err)
+		return nil, err
+	}
+
+	// 根据ins删除对应的数据
+	if err := i.delete(ctx, ins); err != nil {
+		return nil, err
+	}
+
+	return ins, nil
 }

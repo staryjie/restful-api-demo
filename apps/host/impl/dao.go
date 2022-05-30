@@ -123,3 +123,56 @@ func (i *HostServiceImpl) update(ctx context.Context, ins *host.Host) error {
 
 	return nil
 }
+
+func (i *HostServiceImpl) delete(ctx context.Context, ins *host.Host) error {
+	var (
+		err       error
+		resStmt   *sql.Stmt
+		hostStemt *sql.Stmt
+	)
+
+	// 初始化一个事务，所有的操作都在这个事务中执行
+	tx, err := i.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			if err := tx.Rollback(); err != nil {
+				i.l.Errorf("Rollback error, %s", err)
+			}
+		} else {
+			if err := tx.Commit(); err != nil {
+				i.l.Errorf("Commit error, %s", err)
+			}
+		}
+	}()
+
+	// 删除Resource表中的数据
+	resStmt, err = tx.PrepareContext(ctx, deleteResourceSQl)
+	if err != nil {
+		return err
+	}
+
+	defer resStmt.Close()
+
+	_, err = resStmt.ExecContext(ctx, ins.Id)
+	if err != nil {
+		return err
+	}
+
+	// 删除Host表中的数据
+	hostStemt, err = tx.PrepareContext(ctx, deleteHostSQL)
+	if err != nil {
+		return err
+	}
+
+	defer hostStemt.Close()
+
+	_, err = hostStemt.ExecContext(ctx, ins.Id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
