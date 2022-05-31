@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/imdario/mergo"
 )
 
 var (
@@ -67,15 +68,15 @@ func (h *Host) Put(obj *Host) error {
 
 // Host对象局部更新
 func (h *Host) Patch(obj *Host) error {
-	if obj.Name != "" {
-		h.Name = obj.Name
-	}
+	// if obj.Name != "" {
+	// 	h.Name = obj.Name
+	// }
 
-	if obj.CPU != 0 {
-		h.CPU = obj.CPU
-	}
+	// if obj.CPU != 0 {
+	// 	h.CPU = obj.CPU
+	// }
 
-	return nil
+	return mergo.MergeWithOverwrite(h, obj)
 }
 
 type Vendor int
@@ -214,4 +215,3 @@ func NewDeleteHostRequestWithId(id string) *DeleteHostRequest {
 		Id: id,
 	}
 }
-

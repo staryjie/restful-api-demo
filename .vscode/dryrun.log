@@ -1,0 +1,8 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/opt/code/restful-api-demo'
+ 
+go mod tidy
+ 
+go build -ldflags "-s -w" -ldflags "-X ""github.com/staryjie/restful-api-demo"/version".GIT_TAG='0.0.1' -X '""github.com/staryjie/restful-api-demo"/version".GIT_BRANCH=main' -X '""github.com/staryjie/restful-api-demo"/version".GIT_COMMIT=a8acb12155897edd07b74a72707a5e70b5889b44' -X '""github.com/staryjie/restful-api-demo"/version".BUILD_TIME=2022-05-31 15:26:49' -X '""github.com/staryjie/restful-api-demo"/version".GO_VERSION=go1.18.2 linux/amd64'" -o dist/demo-api.exe main.go
+make: Leaving directory '/opt/code/restful-api-demo'
+ 
