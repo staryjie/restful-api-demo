@@ -88,6 +88,9 @@ var StartCmd = &cobra.Command{
 		signal.Notify(ch, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT)
 		go svc.WaitStop(ch)
 
+		// 启动grpc Service
+		go svc.grpc.Start()
+
 		return svc.Start()
 
 		// return g.Run(conf.C().App.HttpAddr())
@@ -96,15 +99,19 @@ var StartCmd = &cobra.Command{
 
 // 用于管理所有需要启动的服务
 // 1.HTTP服务的启动
-// 2.
+// 2. Grpc服务的启动
 type manager struct {
 	http *protocol.HttpService
+	grpc *protocol.GRPCService
 	l    logger.Logger
 }
 
+// 有两个服务需要启动,一个http, 一个grpc
+// 一个前台启动，一个后台启动
 func NewManager() *manager {
 	return &manager{
 		http: protocol.NewHttpService(),
+		grpc: protocol.NewGRPCService(),
 		l:    zap.L().Named("CLI"),
 	}
 }
@@ -122,6 +129,11 @@ func (m *manager) WaitStop(ch <-chan os.Signal) {
 
 		// 统一做停止服务处理
 		default:
+			// 先关闭内部调用
+			if err := m.grpc.Stop(); err != nil {
+				m.l.Error(err)
+			}
+			// 关闭外部调用
 			m.l.Infof("Received signal: %s, start stop server ...", v)
 			m.http.Stop()
 		}
