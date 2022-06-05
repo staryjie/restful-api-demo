@@ -3,6 +3,7 @@ package apps
 import (
 	"fmt"
 
+	"github.com/emicklei/go-restful/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/staryjie/restful-api-demo/apps/host"
 	"google.golang.org/grpc"
@@ -18,9 +19,10 @@ var (
 	// 通过interface{}加断言进行抽象
 
 	// 维护当前所有的服务
-	implApps = map[string]ImplService{}
-	ginApps  = map[string]GinService{}
-	grpcApps = map[string]GrpcService{}
+	implApps    = map[string]ImplService{}
+	ginApps     = map[string]GinService{}
+	grpcApps    = map[string]GrpcService{}
+	restfulApps = map[string]RestfulService{}
 )
 
 func RegistryImpl(svc ImplService) {
@@ -71,6 +73,14 @@ func LoadedGinApps() (names []string) {
 // 已经加载的完成的Grpc App列表
 func LoadedGrpcApps() (names []string) {
 	for k := range grpcApps {
+		names = append(names, k)
+	}
+	return
+}
+
+// 已经加载的完成的Restful App列表
+func LoadedRestfulApps() (names []string) {
+	for k := range restfulApps {
 		names = append(names, k)
 	}
 	return
@@ -132,8 +142,48 @@ func InitGrpc(r *grpc.Server) {
 	}
 }
 
+func GetGrpcApp(name string) interface{} {
+	for k, v := range grpcApps {
+		if name == k {
+			return v
+		}
+	}
+	return nil
+}
+
 type GrpcService interface {
 	Registry(r *grpc.Server)
+	Config()
+	Name() string
+}
+
+func RegistryRestful(svc RestfulService) {
+	// 通过服务名判断服务是否已经注册过
+	if _, ok := restfulApps[svc.Name()]; ok {
+		panic(fmt.Sprintf("Service %s has registried!", svc.Name()))
+	}
+
+	// 服务实力注册到svcs的map中
+	restfulApps[svc.Name()] = svc
+}
+
+// 注册 restful web service
+// restful 有一个Container，类似于一个Root Router
+func InitRestful(r *restful.Container) {
+	// 先初始化所有的对象
+	for _, v := range restfulApps {
+		v.Config()
+	}
+	// 完成HTTP Handler注册
+	for _, v := range restfulApps {
+		ws := new(restful.WebService)
+		r.Add(ws)
+		v.Registry(ws)
+	}
+}
+
+type RestfulService interface {
+	Registry(ws *restful.WebService)
 	Config()
 	Name() string
 }
