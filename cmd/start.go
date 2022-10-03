@@ -88,10 +88,10 @@ var StartCmd = &cobra.Command{
 		signal.Notify(ch, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT)
 		go svc.WaitStop(ch)
 
-		// 启动grpc Service
+		// 后台启动grpc Service
 		go svc.grpc.Start()
 
-		// 启动 restful api
+		// 后台启动 restful api
 		go svc.rest.Start()
 
 		return svc.Start()
@@ -135,9 +135,12 @@ func (m *manager) WaitStop(ch <-chan os.Signal) {
 		// 统一做停止服务处理
 		default:
 			// 先关闭内部调用
+			// 关闭gRpc
 			if err := m.grpc.Stop(); err != nil {
 				m.l.Error(err)
 			}
+			// 关闭restful
+			m.rest.Stop()
 			// 关闭外部调用
 			m.l.Infof("Received signal: %s, start stop server ...", v)
 			m.http.Stop()

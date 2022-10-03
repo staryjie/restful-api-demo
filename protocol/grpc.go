@@ -42,7 +42,7 @@ type GRPCService struct {
 
 // Start 启动GRPC服务
 func (s *GRPCService) Start() {
-	// 装载所有GRPC服务
+	// 将grpc server 注册到ioc
 	apps.InitGrpc(s.svr)
 
 	// 日志打印已经加载的所有grpc服务
