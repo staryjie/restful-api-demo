@@ -71,3 +71,22 @@ make pb
 
 
 ## 为protobuf自动生成代码添加脚手架
+
+```mdkefile
+gen: ## Init Service
+	@protoc -I=. -I=common/pb -I=/usr/local/include/ --go_out=. --go_opt=module=${PKG} --go-grpc_out=. --go-grpc_opt=module=${PKG} apps/*/pb/*.proto
+##  go install github.com/favadi/protoc-go-inject-tag@latest  # protobuf中的tag注入
+	@protoc-go-inject-tag -input=apps/*/*.pb.go
+##  go install github.com/infraboard/mcube/cmd/mcube@latest
+	@mcube generate enum -p -m apps/*/*.pb.go
+	@go mod tidy
+	@go fmt ./...
+```
+
+- `protoc -I=. -I=common/pb -I=/usr/local/include/ --go_out=. --go_opt=module=${PKG} --go-grpc_out=. --go-grpc_opt=module=${PKG} apps/*/pb/*.proto`：编译protobuf文件
+- `protoc-go-inject-tag -input=apps/*/*.pb.go`：读取protobuf文件中的tag注入到编译生成的代码中
+- `mcube generate enum -p -m apps/*/*.pb.go`：枚举生成器编译生成代码
+- `go mod tidy`：安装依赖
+- `go fmt ./...`：格式化代码
+
+然后通过`make gen`命令自动为`apps`目录下所有应用的pb/目录下的protobuf文件编译生成代码。
