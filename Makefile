@@ -48,9 +48,9 @@ pb: ## Copy mcube protobuf files to common/pb
 
 gen: ## Init Service
 	@protoc -I=. -I=common/pb -I=/usr/local/include/ --go_out=. --go_opt=module=${PKG} --go-grpc_out=. --go-grpc_opt=module=${PKG} apps/*/pb/*.proto
-##  go install github.com/favadi/protoc-go-inject-tag@latest
+    ##  go install github.com/favadi/protoc-go-inject-tag@latest
 	@protoc-go-inject-tag -input=apps/*/*.pb.go
-##  go install github.com/infraboard/mcube/cmd/mcube@latest
+    ##  go install github.com/infraboard/mcube/cmd/mcube@latest
 	@mcube generate enum -p -m apps/*/*.pb.go
 	@go mod tidy
 	@go fmt ./...
