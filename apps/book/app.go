@@ -56,13 +56,13 @@ func NewDefaultBook() *Book {
 }
 
 func (i *Book) Update(req *UpdateBookRequest) {
-	i.UpdateAt = time.Now().UnixMicro()
+	i.UpdateAt = time.Now().UnixMilli()
 	i.UpdateBy = req.UpdateBy
 	i.Data = req.Data
 }
 
 func (i *Book) Patch(req *UpdateBookRequest) error {
-	i.UpdateAt = time.Now().UnixMicro()
+	i.UpdateAt = time.Now().UnixMilli()
 	i.UpdateBy = req.UpdateBy
 	return mergo.MergeWithOverwrite(i.Data, req.Data)
 }
